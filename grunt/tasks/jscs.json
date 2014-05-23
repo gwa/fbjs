@@ -1,0 +1,6 @@
+{
+  "src": "src/gwa.*.js",
+  "options": {
+    "config": ".jscsrc"
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "name": "Great White Ark Facebook JS wrapper",
+  "version": "0.0.0",
+  "homepage": "https://github.com/gwa/fbjs",
+  "authors": [
+    "Timothy Groves <groves@greatwhiteark.com>"
+  ],
+  "license": "GNU",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "devDependencies": {
+    "gwajs": "gwa/gwajs#~0.0.2"
+  },
+  "dependencies": {
+    "jquery": "~2.1.1"
+  }
+}

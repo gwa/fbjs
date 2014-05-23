@@ -1,0 +1,254 @@
+/* global gwa */
+/* global FB */
+
+window.gwa = window.gwa || {};
+
+/**
+ * Wrapper for the Facebook API
+ *
+ * @class Facebook
+ * @namespace  gwa
+ */
+(function( ns, $ ) {
+
+	/**
+	 * @method Facebook
+	 * @constructor
+	 * @param  {String} appid
+	 * @param  {String} [channelurl]
+	 * @param  {Number} [canvasheight]
+	 */
+	ns.Facebook = function( appid, channelurl, canvasheight ) {
+
+		var _appid = appid,
+			_channelurl = channelurl,
+			_canvasheight = canvasheight,
+			_api,
+			_dispatcher = new gwa.EventDispatcher(),
+			_isloggedin = false,
+			_iduser,
+			_permissions,
+			_installwindow,
+			_authresponse;
+
+		return {
+
+			init: function() {
+				if (!_appid) {
+					throw 'ERROR: no app id set!';
+				}
+				var p = this;
+				$('body').append($('<div />').attr('id','fb-root'));
+				// load fb sdk
+				window.fbAsyncInit = function() {
+					FB.init({
+						appId: _appid,
+						status: true,
+						cookie: true,
+						xfbml: true,
+						channelUrl: _channelurl
+					});
+					if (_canvasheight) {
+						FB.Canvas.setSize({height: _canvasheight});
+					} else {
+						FB.Canvas.setSize();
+					}
+					_api = FB;
+					_dispatcher.dispatch('FB_INIT', p);
+				};
+				(function() {
+					var e = document.createElement('script'); e.async = true;
+					e.src = document.location.protocol + '//connect.facebook.net/en_US/all.js';
+					document.getElementById('fb-root').appendChild(e);
+				}());
+			},
+
+			on: function( event, func ) {
+				return _dispatcher.on(event,func);
+			},
+
+			off: function( event, func ) {
+				_dispatcher.off(event, func);
+				return this;
+			},
+
+			getDispatcher: function() {
+				return _dispatcher;
+			},
+
+			setCanvasHeight: function( height ) {
+				if (height) {
+					FB.Canvas.setSize({height:height});
+				} else {
+					FB.Canvas.setSize();
+				}
+			},
+
+			scrollTo: function( x, y ) {
+				FB.Canvas.scrollTo(x, y);
+			},
+
+			getLoginStatus: function( onsuccess, onfailure, force ) {
+				force = force ? true : false;
+				_api.getLoginStatus(function(response) {
+					_isloggedin = false;
+					_iduser = null;
+					_permissions = null;
+					switch (response.status) {
+						case 'connected' :
+							// is logged in
+							_isloggedin = true;
+							_iduser = response.authResponse.userID;
+							_authresponse = response.authResponse;
+							//_permissions = jQuery.parseJSON( response.authResponse.permissions );
+							if (typeof(onsuccess) === 'function') {
+								onsuccess(response);
+							}
+							_dispatcher.dispatch('FB_LOGIN_STATUS', true, response);
+							break;
+
+						default :
+							// user is not connected to app
+							if (typeof(onfailure) === 'function') {
+								onfailure(response);
+							}
+							_dispatcher.dispatch('FB_LOGIN_STATUS', false, response);
+							break;
+					}
+				}, force);
+			},
+
+			getPermissions: function() {
+				_api.api('/me/permissions', function(response) {
+					_permissions = [];
+					if (typeof(response.data) !== 'object') {
+						return;
+					}
+					for (var a in response.data) {
+						_permissions[a] = response.data[a];
+					}
+				} );
+			},
+
+			/**
+			 * Has user granted us the permission passed as an argument.
+			 * @param {String} permission
+			 * @return {Boolean}
+			 * @link http://developers.facebook.com/docs/reference/api/permissions/
+			 */
+			hasPermission: function( permission ) {
+				if (typeof(_permissions) === 'undefined') {
+					return false;
+				}
+				if (typeof(_permissions[permission]) === 'undefined') {
+					return false;
+				}
+				return _permissions[permission] ? true : false;
+			},
+
+			/**
+			 * @brief Install the app.
+			 * @param {String} scope
+			 * @param {Function} onsuccess
+			 * @param {Function} onfailure
+			 */
+			login: function( scope, onsuccess, onfailure ) {
+				var handler  = function(response) {
+					switch (response.status) {
+						case 'connected' :
+							_isloggedin = true;
+							_authresponse = response.authResponse;
+							_iduser = response.authResponse.userID;
+							if (typeof(onsuccess) === 'function') {
+								onsuccess(response);
+							}
+							_dispatcher.dispatch('FB_LOGIN', true, response);
+							break;
+
+						default :
+							if (typeof(onfailure) === 'function') {
+								onfailure(response);
+							}
+							_dispatcher.dispatch('FB_LOGIN', false, response);
+					}
+
+				};
+				_api.login(
+					handler,
+					{scope: scope}
+				);
+			},
+
+			/**
+			 * Makes an install button that opens a popup.
+			 * @method makeInstallButton
+			 * @param  {jQuery}          btn
+			 * @param  {String}          scope
+			 * @param  {String}          redirect_uri
+			 */
+			makeInstallButton: function( btn, scope, redirect_uri ) {
+				var p = this;
+				btn.click(function(ev) {
+					ev.preventDefault();
+					_installwindow = window.open(
+						p.getInstallURL(scope, true, redirect_uri),
+						'install',
+						'location=0,status=1,scrollbars=0,width=600,height=400'
+					).focus();
+				});
+			},
+
+			/**
+			 * Returns the install URL.
+			 * @method getInstallURL
+			 * @param  {String}      scope
+			 * @param  {Boolean}     popup display as popup?
+			 * @param  {String}      redirect_uri
+			 * @return {String}
+			 */
+			getInstallURL: function( scope, popup, redirect_uri ) {
+				var url = 'https://www.facebook.com/dialog/oauth?client_id=' + _appid + '&redirect_uri=' + redirect_uri;
+				if (typeof(scope) === 'string') {
+					url += '&scope=' + scope;
+				}
+				if (typeof(popup) === 'undefined' || popup === true) {
+					url += '&display=popup';
+				}
+				return url;
+			},
+
+			handleInstallResponse: function( success, errorstr ) {
+				if (success) {
+					_dispatcher.dispatch('FB_INSTALL', true);
+				} else {
+					_dispatcher.dispatch('FB_INSTALL', false, errorstr);
+				}
+			},
+
+			fb: function() {
+				return _api;
+			},
+
+			getAPI: function() {
+				return _api;
+			},
+
+			setAPI: function( api ) {
+				_api = api;
+			},
+
+			getUserId: function() {
+				return _iduser;
+			},
+
+			getAccessToken: function() {
+				return typeof(_authresponse) === 'object' ? _authresponse.accessToken : null;
+			},
+
+			getAuthResponse: function() {
+				return _authresponse;
+			}
+		};
+	};
+
+}(window.gwa = window.gwa || {}, typeof(jQuery) === 'function' ? jQuery : null));

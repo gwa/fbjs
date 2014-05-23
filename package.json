@@ -1,0 +1,15 @@
+{
+  "name": "fbjs",
+  "version": "0.0.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gwa/fbjs"
+  },
+  "devDependencies": {
+    "grunt": "^0.4.3",
+    "grunt-contrib-jasmine": "^0.6.4",
+    "grunt-contrib-uglify": "^0.4.0",
+    "grunt-contrib-jshint": "^0.10.0",
+    "grunt-jscs-checker": "^0.4.4"
+  }
+}

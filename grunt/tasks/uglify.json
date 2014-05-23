@@ -1,0 +1,14 @@
+{
+  "options": {
+    "banner": "/*! Great White Ark Facebook JS wrapper: https://github.com/gwa/fbjs */\n",
+    "report": "min",
+    "sourceMap": false
+  },
+  "dist": {
+    "files" : {
+      "dist/gwa.Facebook.min.js": [
+        "src/gwa.Facebook.js"
+      ]
+    }
+  }
+}
