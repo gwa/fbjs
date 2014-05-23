@@ -72,13 +72,25 @@ window.gwa = window.gwa || {};
 				}());
 			},
 
+			/**
+			 * Attach event listener
+			 * @method on
+			 * @param  {String} event
+			 * @param  {Function} func
+			 * @return {Number}
+			 */
 			on: function( event, func ) {
-				return _dispatcher.on(event,func);
+				return _dispatcher.on(event, func);
 			},
 
+			/**
+			 * Detach event listener
+			 * @method off
+			 * @param  {String} event
+			 * @param  {Function} func
+			 */
 			off: function( event, func ) {
 				_dispatcher.off(event, func);
-				return this;
 			},
 
 			getDispatcher: function() {
