@@ -28,7 +28,6 @@ window.gwa = window.gwa || {};
 			_isloggedin = false,
 			_iduser,
 			_permissions,
-			_installwindow,
 			_authresponse;
 
 		return {
@@ -101,7 +100,6 @@ window.gwa = window.gwa || {};
 							_isloggedin = true;
 							_iduser = response.authResponse.userID;
 							_authresponse = response.authResponse;
-							//_permissions = jQuery.parseJSON( response.authResponse.permissions );
 							if (typeof(onsuccess) === 'function') {
 								onsuccess(response);
 							}
@@ -179,52 +177,6 @@ window.gwa = window.gwa || {};
 					handler,
 					{scope: scope}
 				);
-			},
-
-			/**
-			 * Makes an install button that opens a popup.
-			 * @method makeInstallButton
-			 * @param  {jQuery}          btn
-			 * @param  {String}          scope
-			 * @param  {String}          redirect_uri
-			 */
-			makeInstallButton: function( btn, scope, redirect_uri ) {
-				var p = this;
-				btn.click(function(ev) {
-					ev.preventDefault();
-					_installwindow = window.open(
-						p.getInstallURL(scope, true, redirect_uri),
-						'install',
-						'location=0,status=1,scrollbars=0,width=600,height=400'
-					).focus();
-				});
-			},
-
-			/**
-			 * Returns the install URL.
-			 * @method getInstallURL
-			 * @param  {String}      scope
-			 * @param  {Boolean}     popup display as popup?
-			 * @param  {String}      redirect_uri
-			 * @return {String}
-			 */
-			getInstallURL: function( scope, popup, redirect_uri ) {
-				var url = 'https://www.facebook.com/dialog/oauth?client_id=' + _appid + '&redirect_uri=' + redirect_uri;
-				if (typeof(scope) === 'string') {
-					url += '&scope=' + scope;
-				}
-				if (typeof(popup) === 'undefined' || popup === true) {
-					url += '&display=popup';
-				}
-				return url;
-			},
-
-			handleInstallResponse: function( success, errorstr ) {
-				if (success) {
-					_dispatcher.dispatch('FB_INSTALL', this, true);
-				} else {
-					_dispatcher.dispatch('FB_INSTALL', this, false, errorstr);
-				}
 			},
 
 			fb: function() {

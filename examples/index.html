@@ -28,12 +28,6 @@ myfb.on('FB_LOGIN_STATUS', function(f, status, response) {
 			break;
 		case false:
 			// create login button
-			/*
-			// response handler to be called from popup window
-			window.handleFbResponse = function(success, errorstr) {
-				f.handleInstallResponse(success, errorstr);
-			};
-			*/
 			var btn = $('<div>connect</div>');
 			btn.on('click', function(ev) {
 				f.login('email');
@@ -45,7 +39,14 @@ myfb.on('FB_LOGIN_STATUS', function(f, status, response) {
 
 // Handle login repsonse
 myfb.on('FB_LOGIN', function(f, success, response) {
-	console.log(success, response);
+	switch(success) {
+		case false:
+			console.log('user denied');
+			break;
+		case true:
+			console.log('user installed: ' + f.getUserId());
+			break;
+	}
 });
 myfb.init();
 </script
