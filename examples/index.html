@@ -9,6 +9,10 @@
 <script src="../dist/gwa.Facebook.min.js"></script>
 <script>
 var myfb = new gwa.Facebook('121229881372493');
+myfb.on('FB_INIT', function(fb) {
+	console.log('FB_INIT');
+	fb.getLoginStatus();
+});
 myfb.on('FB_LOGIN_STATUS', function(fb, status, response) {
 	console.log(status, response);
 	switch(fb.isLoggedIn()) {
@@ -18,13 +22,15 @@ myfb.on('FB_LOGIN_STATUS', function(fb, status, response) {
 		case false:
 			var btn = $('<div>connect</div>');
 			$('body').append(btn);
-			fb.makeInstallButton(btn, 'email', window.location.href);
+			fb.makeInstallButton(btn, 'email', window.location.href.replace('index.html', '') + 'response.php');
+			window.handleFbResponse = function(success, errorstr) {
+				fb.handleInstallResponse(success, errorstr);
+			};
 			break;
 	}
 });
-myfb.on('FB_INIT', function(fb) {
-	console.log('FB_INIT');
-	fb.getLoginStatus();
+myfb.on('FB_INSTALL', function(fb, success, errorstr) {
+	console.log(success, errorstr);
 });
 myfb.init();
 </script
