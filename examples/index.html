@@ -35,7 +35,7 @@ myfb.on('FB_LOGIN_STATUS', function(f, status, response) {
 			};
 			*/
 			var btn = $('<div>connect</div>');
-			btn.on(click, function(ev) {
+			btn.on('click', function(ev) {
 				f.login('email');
 			});
 			$('body').append(btn);
