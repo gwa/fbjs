@@ -8,28 +8,41 @@
 <script src="../bower_components/gwajs/src/gwa.EventDispatcher.js"></script>
 <script src="../dist/gwa.Facebook.min.js"></script>
 <script>
+// create new instance
 var myfb = new gwa.Facebook('121229881372493');
-myfb.on('FB_INIT', function(fb) {
+
+// set up some listeners
+// --------
+
+// Check login status after fb init
+myfb.on('FB_INIT', function(f) {
 	console.log('FB_INIT');
-	fb.getLoginStatus();
+	f.getLoginStatus();
 });
-myfb.on('FB_LOGIN_STATUS', function(fb, status, response) {
-	console.log(status, response);
-	switch(fb.isLoggedIn()) {
+
+// Handle login status response
+myfb.on('FB_LOGIN_STATUS', function(f, status, response) {
+	switch(f.isLoggedIn()) {
 		case true:
 			console.log('is logged in');
 			break;
 		case false:
-			var btn = $('<div>connect</div>');
-			$('body').append(btn);
-			fb.makeInstallButton(btn, 'email', window.location.href.replace('index.html', '') + 'response.php');
+			// create login button
+			/*
+			// response handler to be called from popup window
 			window.handleFbResponse = function(success, errorstr) {
-				fb.handleInstallResponse(success, errorstr);
+				f.handleInstallResponse(success, errorstr);
 			};
+			*/
+			var btn = $('<div>connect</div>');
+			btn.on(click, function(ev) {
+				f.login('email');
+			});
+			$('body').append(btn);
 			break;
 	}
 });
-myfb.on('FB_INSTALL', function(fb, success, errorstr) {
+myfb.on('FB_INSTALL', function(f, success, errorstr) {
 	console.log(success, errorstr);
 });
 myfb.init();
