@@ -9,6 +9,13 @@
 <script src="../dist/gwa.Facebook.min.js"></script>
 <script>
 var myfb = new gwa.Facebook('121229881372493');
+myfb.on('FB_LOGIN_STATUS', function(status, response) {
+	console.log(status, response);
+});
+myfb.on('FB_INIT', function(fb) {
+	console.log('FB_INIT');
+	fb.getLoginStatus();
+});
 myfb.init();
 </script
 </body>
