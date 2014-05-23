@@ -9,8 +9,18 @@
 <script src="../dist/gwa.Facebook.min.js"></script>
 <script>
 var myfb = new gwa.Facebook('121229881372493');
-myfb.on('FB_LOGIN_STATUS', function(status, response) {
+myfb.on('FB_LOGIN_STATUS', function(fb, status, response) {
 	console.log(status, response);
+	switch(fb.isLoggedIn()) {
+		case true:
+			console.log('is logged in');
+			break;
+		case false:
+			var btn = $('<div>connect</div>');
+			$('body').append(btn);
+			fb.makeInstallButton(btn, 'email', window.location.href);
+			break;
+	}
 });
 myfb.on('FB_INIT', function(fb) {
 	console.log('FB_INIT');

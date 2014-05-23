@@ -90,6 +90,7 @@ window.gwa = window.gwa || {};
 
 			getLoginStatus: function( onsuccess, onfailure, force ) {
 				force = force ? true : false;
+				var p = this;
 				_api.getLoginStatus(function(response) {
 					_isloggedin = false;
 					_iduser = null;
@@ -104,7 +105,7 @@ window.gwa = window.gwa || {};
 							if (typeof(onsuccess) === 'function') {
 								onsuccess(response);
 							}
-							_dispatcher.dispatch('FB_LOGIN_STATUS', true, response);
+							_dispatcher.dispatch('FB_LOGIN_STATUS', p, true, response);
 							break;
 
 						default :
@@ -112,7 +113,7 @@ window.gwa = window.gwa || {};
 							if (typeof(onfailure) === 'function') {
 								onfailure(response);
 							}
-							_dispatcher.dispatch('FB_LOGIN_STATUS', false, response);
+							_dispatcher.dispatch('FB_LOGIN_STATUS', p, false, response);
 							break;
 					}
 				}, force);
@@ -153,7 +154,8 @@ window.gwa = window.gwa || {};
 			 * @param {Function} onfailure
 			 */
 			login: function( scope, onsuccess, onfailure ) {
-				var handler  = function(response) {
+				var p = this,
+				handler = function(response) {
 					switch (response.status) {
 						case 'connected' :
 							_isloggedin = true;
@@ -162,14 +164,14 @@ window.gwa = window.gwa || {};
 							if (typeof(onsuccess) === 'function') {
 								onsuccess(response);
 							}
-							_dispatcher.dispatch('FB_LOGIN', true, response);
+							_dispatcher.dispatch('FB_LOGIN', p, true, response);
 							break;
 
 						default :
 							if (typeof(onfailure) === 'function') {
 								onfailure(response);
 							}
-							_dispatcher.dispatch('FB_LOGIN', false, response);
+							_dispatcher.dispatch('FB_LOGIN', p, false, response);
 					}
 
 				};
@@ -219,9 +221,9 @@ window.gwa = window.gwa || {};
 
 			handleInstallResponse: function( success, errorstr ) {
 				if (success) {
-					_dispatcher.dispatch('FB_INSTALL', true);
+					_dispatcher.dispatch('FB_INSTALL', this, true);
 				} else {
-					_dispatcher.dispatch('FB_INSTALL', false, errorstr);
+					_dispatcher.dispatch('FB_INSTALL', this, false, errorstr);
 				}
 			},
 
@@ -239,6 +241,10 @@ window.gwa = window.gwa || {};
 
 			getUserId: function() {
 				return _iduser;
+			},
+
+			isLoggedIn: function() {
+				return _isloggedin;
 			},
 
 			getAccessToken: function() {
