@@ -38,7 +38,7 @@ window.gwa = window.gwa || {};
 				}
 				var p = this,
 					e = document.createElement('div');
-				e.setAttribute('id', 'gwfb-root');
+				e.setAttribute('id', 'fb-root');
 				document.getElementsByTagName('body')[0].appendChild(e);
 				// load fb sdk
 				window.fbAsyncInit = function() {
@@ -60,7 +60,7 @@ window.gwa = window.gwa || {};
 				(function() {
 					var e = document.createElement('script'); e.async = true;
 					e.src = document.location.protocol + '//connect.facebook.net/en_US/all.js';
-					document.getElementById('gwfb-root').appendChild(e);
+					document.getElementById('fb-root').appendChild(e);
 				}());
 			},
 
