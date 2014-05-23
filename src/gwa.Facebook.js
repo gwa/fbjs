@@ -9,7 +9,7 @@ window.gwa = window.gwa || {};
  * @class Facebook
  * @namespace  gwa
  */
-(function( ns, $ ) {
+(function( ns ) {
 
 	/**
 	 * @method Facebook
@@ -36,8 +36,10 @@ window.gwa = window.gwa || {};
 				if (!_appid) {
 					throw 'ERROR: no app id set!';
 				}
-				var p = this;
-				$('body').append($('<div />').attr('id','fb-root'));
+				var p = this,
+					e = document.createElement('div');
+				e.setAttribute('id', 'gwfb-root');
+				document.getElementsByTagName('body')[0].appendChild(e);
 				// load fb sdk
 				window.fbAsyncInit = function() {
 					FB.init({
@@ -58,7 +60,7 @@ window.gwa = window.gwa || {};
 				(function() {
 					var e = document.createElement('script'); e.async = true;
 					e.src = document.location.protocol + '//connect.facebook.net/en_US/all.js';
-					document.getElementById('fb-root').appendChild(e);
+					document.getElementById('gwfb-root').appendChild(e);
 				}());
 			},
 
@@ -209,4 +211,4 @@ window.gwa = window.gwa || {};
 		};
 	};
 
-}(window.gwa = window.gwa || {}, typeof(jQuery) === 'function' ? jQuery : null));
+}(window.gwa = window.gwa || {}));
