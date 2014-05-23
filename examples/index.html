@@ -42,8 +42,10 @@ myfb.on('FB_LOGIN_STATUS', function(f, status, response) {
 			break;
 	}
 });
-myfb.on('FB_INSTALL', function(f, success, errorstr) {
-	console.log(success, errorstr);
+
+// Handle login repsonse
+myfb.on('FB_LOGIN', function(f, success, response) {
+	console.log(success, response);
 });
 myfb.init();
 </script
