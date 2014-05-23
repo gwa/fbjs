@@ -5,7 +5,7 @@
 </head>
 <body>
 <?php
-if (isset($_GET['error']) {
+if (isset($_GET['error'])) {
 	$success = 'false';
 	$errorstr = $_GET['error_reason'];
 } else {
