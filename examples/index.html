@@ -17,14 +17,17 @@ var myfb = new gwa.Facebook('121229881372493');
 // Check login status after fb init
 myfb.on('FB_INIT', function(f) {
 	console.log('FB_INIT');
+	// get login status
 	f.getLoginStatus();
 });
 
 // Handle login status response
 myfb.on('FB_LOGIN_STATUS', function(f, status, response) {
+	console.log('FB_LOGIN_STATUS', status, repsonse);
 	switch(f.isLoggedIn()) {
 		case true:
 			console.log('is logged in');
+			f.me();
 			break;
 		case false:
 			// create login button
@@ -39,15 +42,32 @@ myfb.on('FB_LOGIN_STATUS', function(f, status, response) {
 
 // Handle login repsonse
 myfb.on('FB_LOGIN', function(f, success, response) {
+	console.log('FB_LOGIN', status, response);
 	switch(success) {
 		case false:
 			console.log('user denied');
 			break;
 		case true:
 			console.log('user installed: ' + f.getUserId());
+			f.me();
 			break;
 	}
 });
+
+// Handle 'me' repsonse
+myfb.on('FB_ME', function(f, response) {
+	console.log('FB_ME', response);
+	f.readPermissions();
+});
+
+// Handle permissions repsonse
+myfb.on('FB_READ_PERMISSIONS', function(f, permissions) {
+	console.log('FB_READ_PERMISSIONS', permissions);
+});
+
+
+
+// do it!
 myfb.init();
 </script
 </body>

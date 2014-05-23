@@ -4,7 +4,15 @@
 window.gwa = window.gwa || {};
 
 /**
- * Wrapper for the Facebook API
+ * Wrapper for the Facebook API.
+ *
+ * ## Events
+ *
+ * - `FB_INIT`
+ * - `FB_LOGIN_STATUS`
+ * - `FB_LOGIN`
+ * - `FB_ME`
+ * - `FB_PERMISSIONS`
  *
  * @class Facebook
  * @namespace  gwa
@@ -23,7 +31,7 @@ window.gwa = window.gwa || {};
 		var _appid = appid,
 			_channelurl = channelurl,
 			_canvasheight = canvasheight,
-			_api,
+			_fb,
 			_dispatcher = new gwa.EventDispatcher(),
 			_isloggedin = false,
 			_iduser,
@@ -54,7 +62,7 @@ window.gwa = window.gwa || {};
 					} else {
 						FB.Canvas.setSize();
 					}
-					_api = FB;
+					_fb = FB;
 					_dispatcher.dispatch('FB_INIT', p);
 				};
 				(function() {
@@ -92,7 +100,7 @@ window.gwa = window.gwa || {};
 			getLoginStatus: function( onsuccess, onfailure, force ) {
 				force = force ? true : false;
 				var p = this;
-				_api.getLoginStatus(function(response) {
+				_fb.getLoginStatus(function(response) {
 					_isloggedin = false;
 					_iduser = null;
 					_permissions = null;
@@ -119,8 +127,9 @@ window.gwa = window.gwa || {};
 				}, force);
 			},
 
-			getPermissions: function() {
-				_api.api('/me/permissions', function(response) {
+			readPermissions: function() {
+				var p = this;
+				_fb.api('/me/permissions', function(response) {
 					_permissions = [];
 					if (typeof(response.data) !== 'object') {
 						return;
@@ -128,18 +137,20 @@ window.gwa = window.gwa || {};
 					for (var a in response.data) {
 						_permissions[a] = response.data[a];
 					}
+					_dispatcher.dispatch('FB_READ_PERMISSIONS', p, _permissions);
 				} );
 			},
 
 			/**
-			 * Has user granted us the permission passed as an argument.
+			 * Has user granted us the permission passed as an argument?
+			 * Call `readPermissions` first.
 			 * @param {String} permission
 			 * @return {Boolean}
 			 * @link http://developers.facebook.com/docs/reference/api/permissions/
 			 */
 			hasPermission: function( permission ) {
 				if (typeof(_permissions) === 'undefined') {
-					return false;
+					throw 'read permissions first';
 				}
 				if (typeof(_permissions[permission]) === 'undefined') {
 					return false;
@@ -148,7 +159,16 @@ window.gwa = window.gwa || {};
 			},
 
 			/**
-			 * @brief Install the app.
+			 * Is the user logged in?
+			 * @method isLoggedIn
+			 * @return {Boolean}
+			 */
+			isLoggedIn: function() {
+				return _isloggedin;
+			},
+
+			/**
+			 * Shows the login popup.
 			 * @param {String} scope
 			 * @param {Function} onsuccess
 			 * @param {Function} onfailure
@@ -175,30 +195,38 @@ window.gwa = window.gwa || {};
 					}
 
 				};
-				_api.login(
+				_fb.login(
 					handler,
 					{scope: scope}
 				);
 			},
 
-			fb: function() {
-				return _api;
-			},
-
-			getAPI: function() {
-				return _api;
-			},
-
-			setAPI: function( api ) {
-				_api = api;
+			/**
+			 * Fetches data for currently login in user.
+			 * @method me
+			 */
+			me: function() {
+				var p = this;
+				_fb('me/', function(response) {
+					_dispatcher.dispatch('FB_ME', p, response);
+				});
 			},
 
 			getUserId: function() {
 				return _iduser;
 			},
 
-			isLoggedIn: function() {
-				return _isloggedin;
+			fb: function() {
+				return _fb;
+			},
+
+			/**
+			 * Used for mocking out.
+			 * @method setFB
+			 * @param  {Object} fb
+			 */
+			setFB: function( fb ) {
+				_fb = fb;
 			},
 
 			getAccessToken: function() {
