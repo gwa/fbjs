@@ -207,7 +207,7 @@ window.gwa = window.gwa || {};
 			 */
 			me: function() {
 				var p = this;
-				_fb('me/', function(response) {
+				_fb.api('me/', function(response) {
 					_dispatcher.dispatch('FB_ME', p, response);
 				});
 			},
