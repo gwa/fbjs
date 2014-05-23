@@ -23,7 +23,7 @@ myfb.on('FB_INIT', function(f) {
 
 // Handle login status response
 myfb.on('FB_LOGIN_STATUS', function(f, status, response) {
-	console.log('FB_LOGIN_STATUS', status, repsonse);
+	console.log('FB_LOGIN_STATUS', status, response);
 	switch(f.isLoggedIn()) {
 		case true:
 			console.log('is logged in');
