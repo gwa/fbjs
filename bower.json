@@ -1,6 +1,6 @@
 {
   "name": "gwa-facebook-js",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "homepage": "https://github.com/gwa/fbjs",
   "authors": [
     "Timothy Groves <groves@greatwhiteark.com>"
@@ -11,7 +11,10 @@
     "node_modules",
     "bower_components",
     "test",
-    "tests"
+    "tests",
+    "Gruntfile.js",
+    "package.json",
+    "grunt"
   ],
   "devDependencies": {
     "gwajs": "gwa/gwajs#~0.0.2"
