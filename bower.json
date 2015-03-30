@@ -17,6 +17,6 @@
     "grunt"
   ],
   "dependencies": {
-    "gwajs": "gwa/gwajs#~0.0.2"
+    "gwa-event-dispatcher": "gwa/Event-Dispatcher#~0.0.3"
   }
 }

@@ -7,7 +7,7 @@
   "dist": {
     "files" : {
       "dist/gwa.EventDispatcher.min.js": [
-        "bower_components/gwajs/src/gwa.EventDispatcher.js"
+        "bower_components/gwa-event-dispatcher/dist/Dispatcher.js"
       ],
       "dist/gwa.Facebook.min.js": [
         "src/gwa.Facebook.js"
