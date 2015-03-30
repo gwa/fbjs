@@ -23,14 +23,15 @@ window.gwa = window.gwa || {};
 	 * @method Facebook
 	 * @constructor
 	 * @param  {String} appid
-	 * @param  {String} [channelurl]
-	 * @param  {Number} [canvasheight]
+	 * @param  {String} [locale]
+	 * @param  {String} [version]
 	 */
-	ns.Facebook = function( appid, channelurl, canvasheight ) {
+	ns.Facebook = function( appid, locale, version ) {
 
-		var _appid = appid,
-			_channelurl = channelurl,
-			_canvasheight = canvasheight,
+		var _appid      = appid,
+			_locale     = typeof locale === 'undefined' ? 'en_US' : locale,
+			_version    = typeof version === 'undefined' ? 'v2.3' : version,
+
 			_fb,
 			_dispatcher = new gwa.EventDispatcher(),
 			_isloggedin = false,
@@ -41,35 +42,36 @@ window.gwa = window.gwa || {};
 		return {
 
 			init: function() {
+				var p = this;
+
 				if (!_appid) {
 					throw 'ERROR: no app id set!';
 				}
-				var p = this,
-					e = document.createElement('div');
-				e.setAttribute('id', 'fb-root');
-				document.getElementsByTagName('body')[0].appendChild(e);
+
 				// load fb sdk
 				window.fbAsyncInit = function() {
 					FB.init({
-						appId: _appid,
-						status: true,
-						cookie: true,
-						xfbml: true,
-						channelUrl: _channelurl
+						appId:   _appid,
+						version: _version,
+						status:  true,
+						cookie:  true,
+						xfbml:   true
 					});
-					if (_canvasheight) {
-						FB.Canvas.setSize({height: _canvasheight});
-					} else {
-						FB.Canvas.setSize();
-					}
+
 					_fb = FB;
 					_dispatcher.dispatch('FB_INIT', p);
 				};
-				(function() {
-					var e = document.createElement('script'); e.async = true;
-					e.src = document.location.protocol + '//connect.facebook.net/en_US/all.js';
-					document.getElementById('fb-root').appendChild(e);
-				}());
+
+				(function(d, s, id) {
+					var js, fjs = d.getElementsByTagName(s)[0];
+					if (d.getElementById(id)) {
+						return;
+					}
+					js = d.createElement(s);
+					js.id = id;
+					js.src = "//connect.facebook.net/en_US/sdk.js";
+					fjs.parentNode.insertBefore(js, fjs);
+				}(document, 'script', 'facebook-jssdk'));
 			},
 
 			/**
@@ -95,18 +97,6 @@ window.gwa = window.gwa || {};
 
 			getDispatcher: function() {
 				return _dispatcher;
-			},
-
-			setCanvasHeight: function( height ) {
-				if (height) {
-					FB.Canvas.setSize({height:height});
-				} else {
-					FB.Canvas.setSize();
-				}
-			},
-
-			scrollTo: function( x, y ) {
-				FB.Canvas.scrollTo(x, y);
 			},
 
 			getLoginStatus: function( onsuccess, onfailure, force ) {
@@ -186,7 +176,8 @@ window.gwa = window.gwa || {};
 			 * @param {Function} onfailure
 			 */
 			login: function( scope, onsuccess, onfailure ) {
-				var p = this,
+				var
+				p = this,
 				handler = function(response) {
 					switch (response.status) {
 						case 'connected' :
